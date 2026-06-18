@@ -1,0 +1,7 @@
+# Python packages made available to Python (3.8.1) submissions.
+#
+# To add a module: append it here (optionally pinned, e.g. "pandas==2.0.3")
+# and rebuild the image (`docker compose build` or `docker build`).
+# These are installed into the interpreter used by language id 71
+# (/usr/local/python-3.8.1), so `import <module>` works inside submissions.
+numpy
