@@ -33,7 +33,7 @@ COPY requirements.txt /tmp/requirements.txt
 RUN $JUDGE0_PYTHON3 -m pip install --no-cache-dir --upgrade pip && \
     $JUDGE0_PYTHON3 -m pip install --no-cache-dir -r /tmp/requirements.txt && \
     rm -f /tmp/requirements.txt && \
-    printf 'import os\nos.environ.setdefault("OPENBLAS_NUM_THREADS", "1")\nos.environ.setdefault("OMP_NUM_THREADS", "1")\n' \
+    printf 'import os\nos.environ.setdefault("OPENBLAS_NUM_THREADS", "1")\nos.environ.setdefault("OMP_NUM_THREADS", "1")\nos.environ.setdefault("MPLBACKEND", "Agg")\n' \
       > "$($JUDGE0_PYTHON3 -c 'import site; print(site.getsitepackages()[0])')/sitecustomize.py"
 
 EXPOSE 2358
