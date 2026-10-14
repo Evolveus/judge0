@@ -32,9 +32,19 @@ ENV JUDGE0_PYTHON3="/usr/local/python-3.8.1/bin/python3"
 COPY requirements.txt /tmp/requirements.txt
 RUN $JUDGE0_PYTHON3 -m pip install --no-cache-dir --upgrade pip && \
     $JUDGE0_PYTHON3 -m pip install --no-cache-dir -r /tmp/requirements.txt && \
-    rm -f /tmp/requirements.txt && \
-    printf 'import os\nos.environ.setdefault("OPENBLAS_NUM_THREADS", "1")\nos.environ.setdefault("OMP_NUM_THREADS", "1")\nos.environ.setdefault("MPLBACKEND", "Agg")\n' \
-      > "$($JUDGE0_PYTHON3 -c 'import site; print(site.getsitepackages()[0])')/sitecustomize.py"
+    rm -f /tmp/requirements.txt
+
+# Build matplotlib's font cache once, here, instead of in every submission.
+# python/sitecustomize.py copies it into each sandbox; the path must match
+# _PREBUILT_MPL_CACHE there. Fails the build if no cache was written.
+ENV JUDGE0_MPL_CACHE="/usr/local/share/matplotlib-cache"
+RUN MPLCONFIGDIR="$JUDGE0_MPL_CACHE" $JUDGE0_PYTHON3 -c "import matplotlib.font_manager" && \
+    ls "$JUDGE0_MPL_CACHE"/fontlist-*.json && \
+    chmod -R a+rX "$JUDGE0_MPL_CACHE"
+
+COPY python/sitecustomize.py /tmp/sitecustomize.py
+RUN mv /tmp/sitecustomize.py \
+      "$($JUDGE0_PYTHON3 -c 'import site; print(site.getsitepackages()[0])')/sitecustomize.py"
 
 EXPOSE 2358
 
