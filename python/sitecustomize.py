@@ -14,8 +14,20 @@ os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 
 # There is no display in the sandbox. Agg also makes plt.show() a no-op that
-# keeps figures open.
+# keeps figures open, which is how Evalify captures plots after the program
+# ends. plt.show() is normal in student code, so its "non-GUI backend, so
+# cannot show the figure" warning is silenced: on stderr it reads as an error.
 os.environ.setdefault("MPLBACKEND", "Agg")
+try:
+    import warnings
+
+    warnings.filterwarnings(
+        "ignore",
+        message=r".*(non-GUI backend|non-interactive).*",
+        category=UserWarning,
+    )
+except Exception:
+    pass
 
 # Matplotlib's font cache, built once into the image (see the Dockerfile).
 # Without it, every submission that imports matplotlib scans the system fonts
